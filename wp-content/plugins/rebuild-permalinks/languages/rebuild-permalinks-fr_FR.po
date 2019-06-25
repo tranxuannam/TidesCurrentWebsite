@@ -1,0 +1,58 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Rebuild Permalinks\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-02-04 21:12+0000\n"
+"PO-Revision-Date: 2019-02-04 21:41+0000\n"
+"Last-Translator: Gerry Tucker <gerrytucker@gerrytucker.co.uk>\n"
+"Language-Team: French (France)\n"
+"Language: fr_FR\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Loco https://localise.biz/\n"
+"X-Loco-Version: 2.2.0; wp-5.1-beta3-44723"
+
+#: rebuild-permalinks-admin.php:52
+msgid "Are you sure you want to do this?"
+msgstr "Es-tu sûr de vouloir faire ça?"
+
+#. Author of the plugin
+msgid "Gerry Tucker"
+msgstr ""
+
+#. Author URI of the plugin
+msgid "http://gerrytucker.co.uk/"
+msgstr ""
+
+#. URI of the plugin
+msgid "http://gerrytucker.co.uk/wp-plugins/rebuild-permalinks.zip"
+msgstr ""
+
+#: rebuild-permalinks-admin.php:49
+msgid ""
+"Make sure you have a backup of your WordPress database before rebuilding "
+"permalinks!"
+msgstr ""
+"Assurez-vous d'avoir une copie de sauvegarde de votre base de données "
+"WordPress avant de reconstruire les permaliens!"
+
+#: rebuild-permalinks-admin.php:7
+msgid "permalinks were rebuilt for all posts of type:"
+msgstr "les permaliens ont été reconstruits pour tous les posts de type:"
+
+#. Name of the plugin
+#. Description of the plugin
+#: rebuild-permalinks-admin.php:13 rebuild-permalinks.php:34
+#: rebuild-permalinks.php:35
+msgid "Rebuild Permalinks"
+msgstr "Reconstruire les Permaliens"
+
+#: rebuild-permalinks-admin.php:51
+msgid "Rebuild Selected Permalinks"
+msgstr "Reconstruire les liens permanents sélectionnés"
+
+#: rebuild-permalinks-admin.php:31
+msgid "Select Post Type"
+msgstr "Sélectionnez le type de message"

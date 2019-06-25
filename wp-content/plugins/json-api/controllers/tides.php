@@ -21,7 +21,7 @@ class JSON_API_Tides_Controller {
 		}		
 		
 		$location = $post[0]->custom_fields->location[0];	
-		$wp_results = $wpdb->get_results($wpdb->prepare("SELECT * FROM tides_%d WHERE location = %d AND date >= %d limit %d,%d", array($date, $location, $date, $begin, $end)));
+		$wp_results = $wpdb->get_results($wpdb->prepare("SELECT * FROM tides_%d WHERE location = %d AND date >= %s limit %d,%d", array(substr($date, 0, 4), $location, $date, $begin, $end)));
 		
 		if($wp_results)
 		{
@@ -52,7 +52,7 @@ class JSON_API_Tides_Controller {
 				}
 				$result['moon'] = $res->moon; 
 				$result['sunrise'] = $res->sunrise; 
-				$result['sunset'] =$res->$sunset; 
+				$result['sunset'] = $res->sunset; 
 				$result['moonrise'] = $res->moonrise; 
 				$result['moonset'] = $res->moonset; 
 				
@@ -64,6 +64,24 @@ class JSON_API_Tides_Controller {
 			}             
 		}
 		return $results;
+	}
+	
+	public function get_info_location() {
+	    global $json_api, $post;
+	    $code = $json_api->query->get("code");    
+	    $post = $json_api->introspector->get_posts(array("meta_key" => "code", "meta_value" => $code));
+	    
+	    if(!$post)
+	    {
+	        $json_api->error("Not found.");
+	    }	    
+	    
+	    $results = array(); 
+	    $results['name'] = $post[0]->title;
+	    $results['latitude'] = $post[0]->custom_fields->latitude[0];
+	    $results['longitude'] = $post[0]->custom_fields->longitude[0];
+	    
+	    return $results;
 	}
 	
 }
