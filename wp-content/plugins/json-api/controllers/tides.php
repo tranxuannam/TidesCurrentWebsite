@@ -22,6 +22,7 @@ class JSON_API_Tides_Controller {
 		
 		$location = $post[0]->custom_fields->location[0];	
 		$wp_results = $wpdb->get_results($wpdb->prepare("SELECT * FROM tides_%d WHERE location = %d AND date >= %s limit %d,%d", array(substr($date, 0, 4), $location, $date, $begin, $end)));
+		//print_r($wpdb->last_query);exit;
 		
 		if($wp_results)
 		{

@@ -182,7 +182,7 @@ class Simple_Posts_Table {
 		// Start building the args needed for our posts query
 		$post_args = array(
 			'post_type' => 'post',
-			'posts_per_page' => apply_filters( 'posts_data_table_post_limit', 1000 ),
+			'posts_per_page' => apply_filters( 'posts_data_table_post_limit', 9124 ),
 			'post_status' => 'publish',
 			'suppress_filters' => false // Ensure WPML filters run on this query
 		);
