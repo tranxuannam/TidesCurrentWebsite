@@ -76,7 +76,7 @@ class JSON_API_Tides_Controller {
         
         $post = $json_api->introspector->get_posts(array("meta_key" => "code", "meta_value" => $code));
         
-        if(!$post)
+        if(empty($code) || count($post) == 0 || count($post) > 1)
         {
             $json_api->error("Not found.");
         }
@@ -197,7 +197,7 @@ class JSON_API_Tides_Controller {
         }
     }
     
-	protected function getTidesCurrentData($results = array(), $begin, $end)
+    protected function getTidesCurrentData($results = array(), $begin, $end)
 	{
 	    if($results)
 	    {
@@ -216,7 +216,8 @@ class JSON_API_Tides_Controller {
 	            }
 	            $i++; 
 	        }
-	    }
+	    }	  
+	    
 	    return $arrs;
 	}
 	
@@ -264,11 +265,11 @@ class JSON_API_Tides_Controller {
 	}
 	
 	public function get_info_location() {
-	    global $json_api, $post;
+	    global $json_api;
 	    $code = $json_api->query->get("code");    
 	    $post = $json_api->introspector->get_posts(array("meta_key" => "code", "meta_value" => $code));
 	    
-	    if(!$post)
+	    if(empty($code) || count($post) == 0 || count($post) > 1)
 	    {
 	        $json_api->error("Not found.");
 	    }	    
