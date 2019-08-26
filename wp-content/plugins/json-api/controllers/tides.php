@@ -6,66 +6,6 @@ Controller description: Basic introspection methods
 
 class JSON_API_Tides_Controller {  
   
-  /*
-  public function get_tide_current_by_date() {
-		global $wpdb, $json_api, $post;
-		$code = $json_api->query->get("code");
-		$date = $json_api->query->get("date");
-		$begin = $json_api->query->get("begin");
-		$end = $json_api->query->get("end");
-		$total_records = $json_api->query->get("total");
-		
-		$post = $json_api->introspector->get_posts(array("meta_key" => "code", "meta_value" => $code));
-		
-		if(!$post)
-		{
-			$json_api->error("Not found.");
-		}		
-		
-		$location = $post[0]->custom_fields->location[0];	
-		$wp_results = $wpdb->get_results($wpdb->prepare("SELECT * FROM tides_%d WHERE location = %d AND date >= %s limit %d,%d", array(substr($date, 0, 4), $location, $date, 0, $total_records)));
-		//print_r($wpdb->last_query);exit;
-		
-		$results = array();
-		$records = count($wp_results);
-		self::add_to_array($wp_results, $results);		
-		
-		if(($total_records - $records) > 0)
-		{
-		    $wp_results = $wpdb->get_results($wpdb->prepare("SELECT * FROM tides_%d WHERE location = %d AND date >= %s limit %d,%d", array(substr($date, 0, 4) + 1, $location, $date, 0, $total_records - $records)));
-		    self::add_to_array($wp_results, $results);
-		}
-		
-		return self::getTidesCurrentData($results, $begin, $end);
-	}
-	*/
-    
-    /*
-    public function get_tide_current_by_date() {
-        global $wpdb, $json_api, $post;
-        $code = $json_api->query->get("code");
-        $date = $json_api->query->get("date");
-        $begin = $json_api->query->get("begin");
-        $end = $json_api->query->get("end");
-        
-        $post = $json_api->introspector->get_posts(array("meta_key" => "code", "meta_value" => $code));
-        
-        if(!$post)
-        {
-            $json_api->error("Not found.");
-        }
-        
-        $location = $post[0]->custom_fields->location[0];
-        $wp_results = $wpdb->get_results($wpdb->prepare("SELECT * FROM tides_currents_data WHERE location = %d AND date >= %s limit %d,%d", array($location, $date, $begin, $end)));
-        //print_r($wpdb->last_query);exit;
-        
-        $results = array();
-        self::add_to_array($wp_results, $results);       
-        
-        return $results;
-    }
-    */
-    
     public function get_tide_current_by_date() {
         global $wpdb, $json_api, $post;
         $code = $json_api->query->get("code");
@@ -92,6 +32,39 @@ class JSON_API_Tides_Controller {
         if(($total_records - $records) > 0)
         {
             $wp_results = $wpdb->get_results($wpdb->prepare("SELECT * FROM ". self::getTableName(substr($date, 0, 4) + 1, $location) . " WHERE location = %d AND date >= %s limit %d,%d", array($location, $date, 0, $total_records - $records)));
+            self::add_to_array($wp_results, $results);
+        }
+        
+        return self::getTidesCurrentData($results, $begin, $end);
+    }
+    
+    public function get_prev_tide_current_by_date() {
+        global $wpdb, $json_api;
+        $code = $json_api->query->get("code");
+        $date = $json_api->query->get("date");
+        $begin = $json_api->query->get("begin");
+        $end = $json_api->query->get("end");
+        $total_records = $json_api->query->get("total");
+        
+        $post = $json_api->introspector->get_posts(array("meta_key" => "code", "meta_value" => $code));
+        
+        if(empty($code) || count($post) == 0 || count($post) > 1)
+        {
+            $json_api->error("Not found.");
+        }
+        
+        $location = $post[0]->custom_fields->location[0];
+        $end_date = date('Y-m-d', strtotime($date . "-$total_records days"));
+        $wp_results = $wpdb->get_results($wpdb->prepare("SELECT * FROM " . self::getTableName(substr($date, 0, 4), $location) . " WHERE location = %d AND date > %s AND date <= %s limit %d,%d", array($location, $end_date, $date, 0, $total_records)));
+        //print_r($wpdb->last_query);exit;
+        
+        $results = array();
+        $records = count($wp_results);
+        self::add_to_array($wp_results, $results);
+        
+        if(($total_records - $records) > 0)
+        {
+            $wp_results = $wpdb->get_results($wpdb->prepare("SELECT * FROM ". self::getTableName(substr($date, 0, 4) + 1, $location) . " WHERE location = %d AND date > %s AND date <= %s limit %d,%d", array($location, $end_date, $date, 0, $total_records - $records)));
             self::add_to_array($wp_results, $results);
         }
         
@@ -282,6 +255,50 @@ class JSON_API_Tides_Controller {
 	    return $results;
 	}
 	
+	public function get_near_locations(){
+	    global $wpdb, $json_api;	    
+	    //$lat = $json_api->query->get("lat");
+	    $long = $json_api->query->get("long");
+	   
+	    $rd_query = new WP_Query( array(
+	        'meta_query' => array(	           
+	            array(
+	                'key' => 'longitude',
+	                'value' => $long,
+	                'compare' => '>='
+	            )
+	        ),
+	        'orderby'  => array( 'meta_value' => 'ASC' ),
+	        'posts_per_page' => '1'
+	    ) );	    
+	    
+	    $tmp = $rd_query->post;
+	    $name = explode(",", $tmp->post_title);
+	    
+	    $wp_results = $wpdb->get_results($wpdb->prepare("SELECT p.post_title, p.id, pm.meta_key, pm.meta_value FROM wp_posts p, wp_postmeta pm WHERE p.ID = pm.post_id AND pm.meta_key IN ('code', 'latitude', 'longitude') AND p.post_type = 'post' AND p.post_title LIKE '%".trim($name[sizeof($name)-1])."%' LIMIT 0, 30", array()));
+	    $results = array();
+	    //print_r($wpdb->last_query);exit;
+	    
+	    $arrs = array();
+	    $count = 1;	    
+	    foreach($wp_results as $res)
+	    {
+	        $arrs[$count - 1] = $res->meta_value;
+	        
+	        if($count == 3)
+	        {	          
+	            $result = array();
+	            $result['code']= $arrs[2];
+	            $result['name'] = $res->post_title;
+	            $result['latitude'] = $arrs[0];
+	            $result['longitude'] = $arrs[1];
+	            array_push($results, $result);
+	            $count = 0;
+	        }
+	        $count++;
+	    }	 	    	  
+	    return $results;
+	}	
 }
 
 ?>
