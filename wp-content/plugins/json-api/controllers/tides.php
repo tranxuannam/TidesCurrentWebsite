@@ -273,7 +273,7 @@ class JSON_API_Tides_Controller {
 	    ) );	    
 	    
 	    $tmp = $rd_query->post;
-	    $name = str_replace(Array("Current"), "", explode(",", $tmp->post_title));
+	    $name = str_replace(array("Current"), "", explode(",", $tmp->post_title));
 	    
 	    $wp_results = $wpdb->get_results($wpdb->prepare("SELECT p.post_title, p.id, pm.meta_key, pm.meta_value FROM wp_posts p, wp_postmeta pm WHERE p.ID = pm.post_id AND pm.meta_key IN ('code', 'latitude', 'longitude') AND p.post_type = 'post' AND p.post_title LIKE '%".trim($name[sizeof($name)-1])."%' LIMIT 0, 30", array()));
 	    $results = array();
@@ -289,7 +289,7 @@ class JSON_API_Tides_Controller {
 	        {	          
 	            $result = array();
 	            $result['code']= $arrs[2];
-	            $result['name'] = $res->post_title;
+	            $result['name'] = str_replace("Current", "", $res->post_title);
 	            $result['latitude'] = $arrs[0];
 	            $result['longitude'] = $arrs[1];
 	            array_push($results, $result);
